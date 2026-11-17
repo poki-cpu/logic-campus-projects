@@ -1,0 +1,33 @@
+<!doctype html>
+<html lang="zh-CN"><head><meta charset="UTF-8"><meta name="viewport" content="width=device-width, initial-scale=1"><meta name="description" content="Gate Quest 逻辑之光：用逻辑门修复信号网络，从第一根导线到半加器与路由中枢，修复街区的浏览器电路谜题。"><title>Gate Quest · 逻辑之光</title><link rel="icon" href="data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 64 64'%3E%3Crect width='64' height='64' rx='16' fill='%2310161b'/%3E%3Cpath d='M18 17h15a15 15 0 0 1 0 30H18z' fill='none' stroke='%23b6f36b' stroke-width='4'/%3E%3Cpath d='M7 25h11M7 39h11M48 32h9' stroke='%23b6f36b' stroke-width='4'/%3E%3C/svg%3E"><link rel="stylesheet" href="./style.css"><link rel="stylesheet" href="./shared/editor.css"><script type="module" src="./app.mjs"></script></head>
+<body>
+<header><a href="./" class="brand"><span class="gate-logo" aria-hidden="true"></span><span>GATE<span class="brand-light">QUEST</span><small>逻辑之光</small></span></a><div class="header-center"><span class="header-line"></span> A CIRCUIT PUZZLE EXPERIENCE <span class="header-line"></span></div><div class="header-actions"><span class="score-badge" id="total-stars">加载星级</span><button class="help-button" id="help-open" aria-label="打开游戏指南">?</button></div></header>
+<main class="game-layout">
+<aside class="journey"><div class="journey-title"><span class="eyebrow">YOUR JOURNEY</span><span id="progress-number">加载进度</span></div><h1>重连世界的光。</h1><p class="journey-sub">每一根导线，都是一次发现。</p><div class="progress-track"><div id="progress-bar"></div></div><nav id="levels" aria-label="选择游戏关卡"></nav><div class="journey-foot"><span class="status-dot"></span><div><span id="storage-status">正在读取本机进度</span><small>无需登录 · 不上传任何数据</small></div></div></aside>
+<div class="play-area">
+<div class="task-overview">
+<section class="mission"><div class="mission-top"><span class="eyebrow" id="chapter"></span><span class="level-difficulty" id="level-number"></span></div><div class="mission-heading"><h2 id="level-title"></h2><span id="level-best" class="level-best"></span></div><p id="level-subtitle" class="level-subtitle"></p><div class="mission-task"><span class="task-label">本关任务</span><p id="mission-text"></p></div></section>
+<section class="district" id="district" aria-labelledby="scene-title">
+  <div class="district-heading"><h3 id="scene-title">街区修复</h3><span id="scene-status" role="status" aria-live="polite"></span></div>
+  <div class="district-content"><svg id="district-art" viewBox="0 0 480 190" role="img" aria-label="由当前输入与实际输出驱动的街区场景"></svg><div class="district-monitor"><p class="scene-target" id="scene-target"></p><p class="scene-inputs" id="scene-inputs"></p><div id="scene-readings" aria-live="polite"></div></div></div>
+  <p class="district-note"><span class="status-dot"></span>实时预览只代表当前组合，匹配 ≠ 通关。运行检测，穷举全部输入才算修复。</p>
+</section>
+</div>
+<section class="action-row"><button class="hint-button" id="hint" aria-controls="hint-panel" aria-expanded="false">查看第 1 级提示 · 本次失去无提示星 ↗</button><div class="test-note" id="test-note"></div><button class="run-button" id="run">运行检测 <span>→</span></button></section>
+<section id="hint-panel" class="hint-panel" hidden></section>
+<section class="puzzle" aria-label="电路解谜区域">
+  <div class="puzzle-bar"><div><span class="status-dot"></span><span id="board-state">等待接通信号</span></div><div class="tools"><span id="gate-count"></span><button id="undo" aria-label="撤销一步" title="撤销">↶</button><button id="redo" aria-label="重做一步" title="重做">↷</button><button id="delete" aria-label="删除选中元件" title="删除选中元件">⌫</button><button id="reset">重置本关</button></div></div>
+  <div class="game-board-wrap"><div class="game-board-stage"><svg id="board" class="circuit-board" viewBox="0 0 880 560" tabindex="0" aria-label="游戏电路画布，先点击输出端口再点击输入端口连接" aria-describedby="game-symbol-note"></svg></div><div class="board-caption" id="board-caption"></div></div>
+  <div class="inventory"><div class="inventory-label">可用元件<small>点击添加</small></div><div id="inventory"></div><div class="inventory-tip"><span class="keycap">Esc</span> 取消连线<br>点击导线可移除</div></div>
+  <div class="board-guide">
+    <div class="legend" aria-label="信号图例"><span><i class="signal-swatch is-low" aria-hidden="true"></i>灰 0 · 低</span><span><i class="signal-swatch is-high" aria-hidden="true"></i>绿 1 · 高</span><span><i class="signal-swatch is-unknown" aria-hidden="true"></i>虚线 ? · 未知</span></div>
+    <p class="symbol-note" id="game-symbol-note">美式门符号；空心小圆 = 反相（不是端口）。点击端口连接，导线交叉不代表相连。</p>
+  </div>
+</section>
+<section class="feedback" id="feedback" aria-live="polite"><div class="feedback-heading"><span class="eyebrow">SIGNAL CHECK</span><span>穷举所有输入，不只检测当前开关</span></div><p>连接电路后运行检测，看看你的信号能否到达终点。</p></section>
+<div class="play-footer"><span>01 / 点输出端口</span><span>02 / 接输入端口</span><span>03 / 运行检测</span><span class="footer-tag">LIFEHACK · PLAY WITH LOGIC</span></div>
+</div></main>
+<dialog id="success" class="success-dialog"><button class="dialog-close" id="success-close" aria-label="关闭通关窗口">×</button><div class="success-orbit"><span>✓</span></div><p class="eyebrow">SIGNAL RESTORED</p><h2 id="success-title">信号，接通了。</h2><div class="earned-stars" id="earned-stars"></div><p id="success-description"></p><div class="success-stats" id="success-stats"></div><p id="concept" class="concept"></p><button class="run-button" id="next">下一关 <span>→</span></button><button class="secondary-button" id="replay">回到电路，继续优化</button></dialog>
+<dialog id="help" class="help-dialog"><button class="dialog-close" id="help-close" aria-label="关闭游戏指南">×</button><p class="eyebrow">HOW TO PLAY</p><h2>一盏灯，一段逻辑。</h2><p>用有限的逻辑门，搭出符合任务的电路。全部 <span id="help-level-count"></span> 关可直接体验，也可以按顺序挑战：先修复灯塔与能源，再挑战双输出半加器，最后重启路由中枢。</p><ol><li>点击元件按钮添加逻辑门，拖动元件调整位置。</li><li>先点元件右侧输出圆点，再点下游左侧输入圆点；同一信号可以连向多个元件。</li><li>点 A、B 等开关切换 0 / 1，观察灯的状态。</li><li>运行检测会验证所有输入组合；失败时会展示具体反例。</li></ol><p class="guide-symbols">器件采用美式门符号；空心小圆表示反相，不是连接端口。点击端口连接，导线交叉不代表相连。信号：灰色 0 为低电平，绿色 1 为高电平，虚线 ? 为未知。</p><div class="help-rule"><b>三颗星如何获得</b><p>完成全部测试 +1 星；达到目标元件数 +1 星；本次挑战未使用提示 +1 星。提示按规律、思路、接法逐级展开；首次查看即失去本次无提示星，收起或撤销不能恢复。重置会清空电路、撤销/重做和提示记录，开始新挑战，不会清除最高星级。</p></div><p>键盘：Tab 切换端口，Enter / 空格连接；Esc 取消连线；选中元件后可用方向键移动、Delete 删除。未接端口显示 ?，不能通过检测。</p></dialog>
+<div id="toast" class="toast" role="status" aria-live="polite"></div>
+</body></html>

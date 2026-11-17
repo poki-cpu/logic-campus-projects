@@ -1,0 +1,1 @@
+{"name":"gate-quest","private":true,"type":"module","scripts":{"build":"node ../scripts/build.mjs gate-quest","dev":"node ../scripts/serve.mjs gate-quest"}}

@@ -1,0 +1,40 @@
+<!doctype html>
+<html lang="zh-CN"><head><meta charset="UTF-8"><meta name="viewport" content="width=device-width, initial-scale=1"><meta name="description" content="Logic Lab 逻辑实验室：搭建数字电路，实时观察信号、真值表和卡诺图，在实验中理解逻辑。"><title>Logic Lab · 逻辑实验室</title><link rel="icon" href="data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 64 64'%3E%3Crect width='64' height='64' rx='16' fill='%231d7159'/%3E%3Cpath d='M17 17v30h30M28 17v19h19' fill='none' stroke='white' stroke-width='5'/%3E%3C/svg%3E"><link rel="stylesheet" href="./style.css"><link rel="stylesheet" href="./shared/editor.css"><script type="module" src="./app.mjs"></script></head>
+<body>
+<header class="site-header"><a class="brand" href="./" aria-label="Logic Lab 首页"><span class="brand-mark">L<span>·</span></span><span>Logic Lab<small>逻辑实验室</small></span></a><nav aria-label="主导航"><span class="nav-active">实验工作台</span><button class="nav-button" id="guide-open">实验手册 <span>↗</span></button></nav><div class="header-right"><span class="local-badge"><i></i> 本地计算 · 无需登录</span><button class="button" id="export">导出电路 <span>↗</span></button></div></header>
+<main>
+<section class="intro"><div><p class="eyebrow">STUDYHACK / DIGITAL LOGIC</p><h1>让逻辑，看得见。</h1><p class="subtitle">从一根导线开始，理解每一次 0 与 1 的变化。</p></div><div class="intro-note"><span class="note-index">01 — 03</span><p>搭建电路 <b>→</b> 观察信号 <b>→</b> 理解原理</p></div></section>
+<section class="workspace" aria-label="电路实验工作台">
+<div class="workspace-bar"><div class="experiment-title"><span class="square-icon">⌘</span><label for="example">当前实验</label><select id="example"><option value="half">半加器</option><option value="and">双开关灯</option><option value="mux">二选一选择器</option><option value="blank">空白实验</option><option value="custom" disabled>导入 / 自定义电路</option></select></div><div class="toolbar"><a class="goal-jump" href="#goal-heading">实验检测 ↓</a><span id="save-state">自动保存到本机</span><button class="icon-button" id="undo" title="撤销" aria-label="撤销">↶</button><button class="icon-button" id="redo" title="重做" aria-label="重做">↷</button><span class="separator"></span><button class="text-button" id="import">导入 JSON</button><input type="file" id="file" accept=".json,application/json" hidden></div></div>
+<div class="work-grid">
+<aside class="palette"><div class="panel-label">元件库 <span>＋</span></div><p class="micro">点击添加，拖动摆放</p><div id="palette"></div><div class="palette-bottom"><span class="keycap">Esc</span> 取消连线<br><span class="keycap">Del</span> 删除选中</div></aside>
+<div class="board-wrap">
+  <div class="board-top"><span id="experiment-note"></span><span class="live-pill"><i></i> 实时模拟</span></div>
+  <div class="board-stage"><svg id="board" class="circuit-board" viewBox="0 0 880 560" aria-label="交互式组合逻辑电路，可用 Tab 选择端口、回车连接" aria-describedby="lab-symbol-note" tabindex="0"></svg></div>
+  <div class="board-bottom">
+    <span id="wire-help">连线：点击右侧输出点，再点击左侧输入点</span>
+    <div class="legend" aria-label="信号图例"><span><i class="signal-swatch is-low" aria-hidden="true"></i>灰 0 · 低</span><span><i class="signal-swatch is-high" aria-hidden="true"></i>绿 1 · 高</span><span><i class="signal-swatch is-unknown" aria-hidden="true"></i>虚线 ? · 未知</span></div>
+    <p class="symbol-note" id="lab-symbol-note">美式门符号；空心小圆 = 反相（不是端口）。点击端口连接，导线交叉不代表相连。</p>
+  </div>
+</div>
+<aside class="inspector">
+  <section class="inspector-section"><div class="panel-label">信号观察 <span class="tiny-label">LIVE</span></div><div id="signal-cards"></div></section>
+  <section class="inspector-section"><div class="panel-label">原理透镜 <span>◎</span></div><div id="explanation" class="explanation"></div><button id="delete-node" class="text-button danger">删除选中元件</button></section>
+  <section class="inspector-section"><div class="panel-label">接线检查</div><div id="diagnostics" aria-live="polite"></div></section>
+</aside>
+</div>
+<section class="goal-panel" aria-labelledby="goal-heading">
+<div class="goal-heading"><div><h2 id="goal-heading">实验目标</h2><p class="micro">接线检查 ≠ 功能检测；按端子标签逐一对照。</p></div><label class="goal-select">目标 <select id="goal-select"><option value="free">自由探索</option><option value="and">双开关灯</option><option value="half" selected>半加器</option><option value="mux">选择器</option></select></label><div class="goal-actions"><button class="button" id="goal-check">检测全部组合</button><button class="button" id="debug-exercise">找错练习</button></div></div>
+<p id="goal-description"></p><p id="goal-terminals" class="micro"></p>
+<div class="goal-content"><div><div id="goal-status" class="goal-status" role="status" aria-live="polite"></div><div id="goal-table" class="table-wrap"></div></div><aside class="goal-trace"><div class="panel-label">反例与候选路径</div><button class="button" id="first-failure" disabled>复现首个失败</button><div id="goal-trace" aria-live="polite"><p class="micro">检测后可复现失败输入，沿错误输出向上游排查。</p></div></aside></div>
+</section>
+</section>
+<section class="analysis-grid" aria-label="电路分析">
+<article class="card truth-card"><div class="card-heading"><div><p class="eyebrow">01 / TRUTH TABLE</p><h2>每一种输入，都有答案</h2></div><button class="text-button" id="csv">导出 CSV ↗</button></div><p class="micro">点击任意一行，在电路上复现这组输入。</p><div class="table-wrap" id="truth-table"></div></article>
+<article class="card kmap-card"><div class="card-heading"><div><p class="eyebrow">02 / KARNAUGH MAP</p><h2>找到更简洁的表达</h2></div><label class="output-select">输出 <select id="output-select" aria-label="选择分析的输出"></select></label></div><div class="kmap-layout"><div><div id="kmap" class="kmap"></div><p class="micro" id="gray-note"></p></div><div class="expression-block"><span class="micro">最简与或式 · 点击公式项看圈组</span><div id="expression"></div><div id="group-terms" class="group-terms" aria-label="公式项与圈组"></div><div id="group-detail" class="group-detail" aria-live="polite"></div><p class="micro">¬ 表示非 · 表示与 + 表示或<br>圈组可重叠；点击格子查看覆盖它的公式项。</p></div></div></article>
+</section>
+<footer><span><b>Logic Lab</b> / 在实验中理解，而不是记住。</span><span>组合逻辑 · 最多 4 输入 / 4 输出 · 数据仅保存在本机</span></footer>
+</main>
+<dialog id="guide"><div class="dialog-heading"><p class="eyebrow">FIELD NOTES</p><button class="icon-button" id="guide-close" aria-label="关闭实验手册">×</button></div><h2>你的第一场逻辑实验</h2><ol><li><b>从半加器开始。</b> 点击 A、B 开关，观察和 S 与进位 C。</li><li><b>加入一个逻辑门。</b> 点击元件库，拖动到合适位置；选中后也可用方向键移动。</li><li><b>连接两个端口。</b> 先点上游右侧圆点，再点下游左侧圆点。再次连接会替换原线，点击导线可删除。</li><li><b>目标与找错。</b> 选择实验目标并检测全部组合；点击「复现首个失败」观察反例。高亮的是错误输出的上游候选路径，不代表已确定某个门有错。「找错练习」加载有意错误的半加器，可撤销恢复。</li><li><b>圈组与理解。</b> 点击真值表复现输入；点击公式项看覆盖格、保留与消去的变量。卡诺图按格雷码排列，首尾边界也相邻。</li><li><b>留下实验。</b> 本机自动保存，导出 JSON 可备份、再次导入；CSV 可用于实验报告。</li></ol><p class="guide-symbols">器件采用美式门符号；空心小圆表示反相，不是连接端口。点击端口连接，导线交叉不代表相连。信号：灰色 0 为低电平，绿色 1 为高电平，虚线 ? 为未知。</p><div class="guide-note">本版使用确定性规则计算，不调用 AI 编造结果。仅支持一位、无反馈的组合逻辑；未连接端口记为「?」，不默认为 0。支持本站 JSON 格式，暂不支持 .circ 文件、时钟、触发器与子电路。</div><p class="micro">键盘：Tab 选择端口，Enter / 空格连接；Esc 取消；Delete 删除元件。载入实验会替换当前电路，可以撤销恢复。</p></dialog>
+<div class="toast" id="toast" role="status" aria-live="polite"></div>
+</body></html>
